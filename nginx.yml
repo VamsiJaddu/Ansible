@@ -1,0 +1,27 @@
+---
+- name: Install Nginx on managed nodes
+  hosts: all               # Runs on all hosts defined in your inventory
+  become: yes              # Use sudo to install packages
+  tasks:
+    - name: Update package repository
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_os_family == "Debian"
+
+    - name: Install Nginx on Debian/Ubuntu
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install Nginx on RHEL/CentOS
+      ansible.builtin.yum:
+        name: nginx
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Start and enable Nginx service
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: yes
